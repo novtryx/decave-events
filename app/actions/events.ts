@@ -28,6 +28,14 @@ export type CreateEventPayload = {
   tickets: CreateTicketPayload[];
 };
 
+export type InitializePayment = {
+  email: string;
+  name: string;
+  phone: string;
+  eventId: number;
+  ticketId: string;
+};
+
 export async function createEvent(payload: CreateEventPayload): Promise<void> {
   const res = await protectedFetch<any>("/events", {
     method: "POST",
@@ -54,4 +62,41 @@ export async function getEventByName(name: string): Promise<any> {
 
 return res
 
+}
+
+
+export async function initializePayment(payload: InitializePayment[]): Promise<any> {
+  const res = await publicFetch<any>(`/paystack/initialize`, {
+    method: "POST",
+    body: payload
+  });
+
+return res
+
+}
+
+
+export async function getAttendeesByRef(ref: string): Promise<any> {
+  const res = await publicFetch<any>(`/attendees/ref?ref=${ref}`, {
+    method: "GET",
+  });
+
+return res
+
+}
+
+export async function getAttendeesById(eventId: string, page: string, limit:string): Promise<any> {
+  const res = await protectedFetch<any>(`/attendees/event/${eventId}?page=${page}&limit=${limit}`, {
+    method: "GET",
+  });
+
+return res
+
+}
+
+export async function getDashboardOverview(): Promise<any> {
+  const res = await protectedFetch<any>("/events/dashboard-overview", {
+    method: "GET",
+  });
+  return res;
 }

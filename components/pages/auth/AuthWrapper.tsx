@@ -26,7 +26,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
             <MdConfirmationNumber className="text-black text-lg" />
           </div>
           <span className="text-2xl font-extrabold text-white tracking-tight">
-            Novtryx<span className="text-[#FFD159]">.</span>
+            De Cave<span className="text-[#FFD159]">.</span>
           </span>
         </div>
 
@@ -88,7 +88,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
             <MdConfirmationNumber className="text-black" />
           </div>
           <span className="text-xl font-extrabold text-white">
-            Novtryx<span className="text-[#FFD159]">.</span>
+            De Cave<span className="text-[#FFD159]">.</span>
           </span>
         </div>
 

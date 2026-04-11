@@ -1,10 +1,13 @@
 "use client";
 
 import { getEventByName } from "@/app/actions/events";
+import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import CryptoJS from "crypto-js";
+
 
 type Ticket = {
   id: string;
@@ -39,6 +42,7 @@ const MAX_TICKETS = 5;
 
 const EventPage = () => {
   const params = useParams();
+  const router = useRouter()
   const eventName = decodeURIComponent(params.eventName as string);
 
   const { data: event, isLoading, error } = useQuery<Event>({
@@ -305,15 +309,30 @@ const EventPage = () => {
               <span className="text-2xl font-black text-[#FFD159]">{fmt(total)}</span>
             </div>
 
-            <button
-              disabled={!selectedTicketId}
+            <Button
+onClick={() => {
+  const data = {
+  eventId: event.id,
+  ticketId: selectedTicket?.id,
+  qty,
+  total,
+  orgPays: event.organizerPays,
+};
+
+const encrypted = CryptoJS.AES.encrypt(
+  JSON.stringify(data),
+  "devave-query-secret"
+).toString();
+
+router.push(`/events/checkout?data=${encodeURIComponent(encrypted)}`);
+}}             disabled={!selectedTicketId}
               className="w-full py-4 rounded-xl bg-[#FFD159] text-black text-base font-black tracking-tight
               disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 transition"
             >
               {selectedTicketId
                 ? `Purchase ${qty} ticket${qty > 1 ? "s" : ""} · ${fmt(total)}`
                 : "Select a ticket to continue"}
-            </button>
+            </Button>
 
             {event.organizerPays && selectedTicketId && (
               <p className="text-center text-xs mt-3">

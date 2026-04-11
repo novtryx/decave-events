@@ -42,7 +42,7 @@ const validate = (email: string, password: string): FormErrors => {
 
 const LoginForm: React.FC<LoginFormProps> = ({
   onSubmit,
-  logoText = "Novtryx",
+  logoText = "De Cave",
   logoHref = "/",
   registerHref = "/register",
   forgotPasswordHref = "/forgot-password",

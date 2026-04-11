@@ -81,7 +81,7 @@ const validateField = (field: keyof FormFields, fields: FormFields): string | un
 
 const RegisterForm: React.FC<RegisterFormProps> = ({
   onSubmit,
-  logoText = "Novtryx",
+  logoText = "De Cave",
   logoHref = "/",
   loginHref = "/login",
   className = "",
