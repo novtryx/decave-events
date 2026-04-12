@@ -1,5 +1,8 @@
 "use server"
+import { unstable_noStore as noStore } from "next/cache";
+
 export async function uploadFile(file: File) {
+  noStore();
   const formData = new FormData();
   formData.append("file", file); // key must match 'file' in FileInterceptor
 

@@ -1,5 +1,6 @@
 "use server"
 import { protectedFetch } from "@/lib/protectedFetch";
+import { unstable_noStore as noStore } from "next/cache";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -59,6 +60,7 @@ type Bank = {
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 export async function getPayoutSummary(): Promise<PayoutSummary> {
+  noStore();
   const res = await protectedFetch<PayoutSummary>("/payouts/summary", {
     method: "GET",
   });
@@ -71,6 +73,7 @@ export async function getWithdrawals(
   page: string = "1",
   limit: string = "20"
 ): Promise<PaginatedWithdrawals> {
+  noStore();
   const res = await protectedFetch<PaginatedWithdrawals>(
     `/payouts/withdrawals?page=${page}&limit=${limit}`,
     { method: "GET" }
@@ -81,6 +84,7 @@ export async function getWithdrawals(
 export async function requestWithdrawal(
   payload: CreateWithdrawalPayload
 ): Promise<{ message: string }> {
+  noStore();
   const res = await protectedFetch<{ message: string }>("/payouts/withdraw", {
     method: "POST",
     body: payload,
@@ -91,6 +95,7 @@ export async function requestWithdrawal(
 // ─── Bank Account ─────────────────────────────────────────────────────────────
 
 export async function getBankAccount(): Promise<BankAccount> {
+  noStore();
   const res = await protectedFetch<BankAccount>("/payouts/bank-account", {
     method: "GET",
   });
@@ -100,6 +105,7 @@ export async function getBankAccount(): Promise<BankAccount> {
 export async function saveBankAccount(
   payload: SaveBankAccountPayload
 ): Promise<BankAccount> {
+  noStore();
   const res = await protectedFetch<BankAccount>("/payouts/bank-account", {
     method: "POST",
     body: payload,
@@ -108,6 +114,7 @@ export async function saveBankAccount(
 }
 
 export async function deleteBankAccount(): Promise<{ message: string }> {
+  noStore();
   const res = await protectedFetch<{ message: string }>("/payouts/bank-account", {
     method: "DELETE",
   });
@@ -115,6 +122,7 @@ export async function deleteBankAccount(): Promise<{ message: string }> {
 }
 
 export async function getBanks(): Promise<Bank[]> {
+  noStore();
   const res = await protectedFetch<Bank[]>("/payouts/banks", {
     method: "GET",
   });
@@ -125,6 +133,7 @@ export async function resolveAccount(
   accountNumber: string,
   bankCode: string
 ): Promise<{ account_name: string; account_number: string }> {
+  noStore();
   const res = await protectedFetch<{ account_name: string; account_number: string }>(
     `/payouts/resolve-account?accountNumber=${accountNumber}&bankCode=${bankCode}`,
     { method: "GET" }

@@ -3,6 +3,8 @@
 import { authFetch } from "@/lib/authFetch"; 
 import { deleteAccessToken, setAccessToken } from "@/lib/authCookies"; 
 import { redirect } from "next/navigation";
+import { unstable_noStore as noStore } from "next/cache";
+
 
 type LoginPayload = {
   email: string;
@@ -22,6 +24,7 @@ type LoginResponse = {
 };
 
 export async function loginUser(payload: LoginPayload): Promise<void> {
+  noStore();
   const res = await authFetch<LoginResponse>("/users/login", {
     method: "POST",
     body: payload,
@@ -33,6 +36,7 @@ redirect("/dashboard");
 }
 
 export async function RegisterUser(payload: RegisterPayload): Promise<void> {
+  noStore();
   const res = await authFetch<any>("/users/register", {
     method: "POST",
     body: payload,
@@ -48,6 +52,7 @@ export async function logout() {
 }
 
 export async function forgotPassword(email: string): Promise<{ message: string }> {
+  noStore();
   const res = await fetch(`${process.env.API_URL}/users/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -66,6 +71,7 @@ export async function resetPassword(
   token: string,
   newPassword: string
 ): Promise<{ message: string }> {
+  noStore();
   const res = await fetch(`${process.env.API_URL}/users/reset-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
