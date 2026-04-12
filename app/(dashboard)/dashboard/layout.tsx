@@ -5,9 +5,7 @@ import { ReactNode, useState } from "react";
 import {
     MdDashboard,
     MdEvent,
-    MdConfirmationNumber,
     MdPeople,
-    MdBarChart,
     MdPayments,
     MdSettings,
     MdAdd,
@@ -15,6 +13,8 @@ import {
     MdClose,
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
+import { UserBadge } from "@/components/ui/UserBadge"; 
+import Image from "next/image";
 
 type Props = {
     children: ReactNode;
@@ -24,9 +24,7 @@ const navLinks = [
     { label: "Overview", href: "/dashboard", icon: <MdDashboard /> },
     { label: "Events", href: "/dashboard/events", icon: <MdEvent /> },
     { label: "Create Event", href: "/dashboard/events/create", icon: <MdAdd /> },
-    // { label: "Tickets", href: "/dashboard/tickets", icon: <MdConfirmationNumber /> },
     { label: "Attendees", href: "/dashboard/attendees", icon: <MdPeople /> },
-    // { label: "Analytics", href: "/dashboard/analytics", icon: <MdBarChart /> },
     { label: "Payouts", href: "/dashboard/payouts", icon: <MdPayments /> },
     { label: "Settings", href: "/dashboard/settings", icon: <MdSettings /> },
 ];
@@ -49,11 +47,10 @@ const OrganizerLayout = ({ children }: Props) => {
                         href={link.href}
                         onClick={() => setOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
-              ${
-                  isActive
-                      ? "bg-[#FFD159]/10 text-[#FFD159]"
-                      : "text-gray-300 hover:bg-[#1f1f1f]"
-              }`}
+                            ${isActive
+                                ? "bg-[#FFD159]/10 text-[#FFD159]"
+                                : "text-gray-400 hover:bg-[#1f1f1f] hover:text-white"
+                            }`}
                     >
                         <span className="text-lg">{link.icon}</span>
                         {link.label}
@@ -65,15 +62,14 @@ const OrganizerLayout = ({ children }: Props) => {
 
     return (
         <div className="min-h-screen flex overflow-y-hidden bg-[#0f0f0f]">
+
             {/* ── Sidebar (Desktop) ── */}
             <aside className="hidden md:flex flex-col w-64 bg-[#121212] border-r border-[#1f1f1f]">
                 {/* Logo */}
                 <div className="h-16 flex items-center px-6 border-b border-[#1f1f1f]">
                     <span className="flex items-center gap-2 font-extrabold text-lg text-white">
-                        <span className="w-8 h-8 rounded-lg bg-[#FFD159] flex items-center justify-center text-black">
-                            🎟
-                        </span>
-                        Tickr<span className="text-[#FFD159]">.</span>
+                        <Image src="/logo.svg" width={20} height={20} alt="logo"/>
+                        De Cave<span className="text-[#FFD159]">.</span>
                     </span>
                 </div>
 
@@ -94,9 +90,15 @@ const OrganizerLayout = ({ children }: Props) => {
 
                     {/* Drawer */}
                     <div className="relative w-64 bg-[#121212] h-full shadow-xl p-4 flex flex-col">
-                        <div className="flex items-center justify-between mb-6">
-                            <span className="font-bold text-white">Menu</span>
-                            <button onClick={() => setOpen(false)} className="text-white">
+                        <div className="flex items-center justify-between mb-6 px-2">
+                            <span className="flex items-center gap-2 font-extrabold text-base text-white">
+                               <Image src="/logo.svg" width={30} height={30} alt="logo"/>
+                                De Cave<span className="text-[#FFD159]">.</span>
+                            </span>
+                            <button
+                                onClick={() => setOpen(false)}
+                                className="text-gray-400 hover:text-white transition"
+                            >
                                 <MdClose size={22} />
                             </button>
                         </div>
@@ -110,37 +112,39 @@ const OrganizerLayout = ({ children }: Props) => {
 
             {/* ── Main ── */}
             <div className="flex-1 flex flex-col max-h-full">
-                {/* Topbar */}
-                <header className="h-fit py-4 bg-[#121212] border-b border-[#1f1f1f] flex items-center justify-between px-4 sm:px-6">
+
+                {/* ── Topbar ── */}
+                <header className="h-fit py-3 bg-[#121212] border-b border-[#1f1f1f] flex items-center justify-between px-4 sm:px-6">
+
                     {/* Left */}
                     <div className="flex items-center gap-3">
                         <button
-                            className="md:hidden text-white"
+                            className="md:hidden text-gray-400 hover:text-white transition"
                             onClick={() => setOpen(true)}
                         >
                             <MdMenu size={24} />
                         </button>
 
-                        <h1 className="text-base sm:text-lg font-semibold text-white">
-                            Dashboard
-                        </h1>
+                        {/* Logo on mobile */}
+                        <span className="flex md:hidden items-center gap-2 font-extrabold text-base text-white">
+                            <Image src="/logo.svg" width={30} height={30} alt="logo"/>
+                            De Cave<span className="text-[#FFD159]">.</span>
+                        </span>
                     </div>
 
                     {/* Right */}
                     <div className="flex items-center gap-3">
-                        {/* Quick action */}
                         <Link
                             href="/dashboard/events/create"
                             className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-black bg-[#FFD159] hover:opacity-90 transition"
                         >
-                            <MdAdd />
+                            <MdAdd size={16} />
                             New Event
                         </Link>
 
-                        {/* Avatar */}
-                        <div className="w-9 h-9 rounded-full bg-[#FFD159] text-black flex items-center justify-center text-sm font-bold">
-                            E
-                        </div>
+                        <div className="hidden sm:block w-px h-6 bg-[#2a2a2a]" />
+
+                        <UserBadge />
                     </div>
                 </header>
 

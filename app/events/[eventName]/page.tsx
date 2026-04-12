@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import CryptoJS from "crypto-js";
+import { underscoreToSpace } from "@/lib/generalFunction";
 
 
 type Ticket = {
@@ -43,11 +44,11 @@ const MAX_TICKETS = 5;
 const EventPage = () => {
   const params = useParams();
   const router = useRouter()
-  const eventName = decodeURIComponent(params.eventName as string);
+  const eventName =decodeURIComponent(params.eventName as string);
 
   const { data: event, isLoading, error } = useQuery<Event>({
     queryKey: ["event", eventName],
-    queryFn: () => getEventByName(eventName),
+    queryFn: () => getEventByName(  underscoreToSpace(eventName) ),
   });
 
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);

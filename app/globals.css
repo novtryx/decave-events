@@ -8,8 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+ 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,9 +17,16 @@
     --foreground: #ededed;
   }
 }
+button {
+  @apply cursor-pointer;
+}
 
+@layer base {
+  body {
+    font-family: var(--font-philosopher), serif;
+  }
+}
 body {
   background: #0a0a0a;
   color: white;
-  font-family: Arial, Helvetica, sans-serif;
 }

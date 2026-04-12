@@ -1,8 +1,11 @@
 import React from 'react'
+import SettingsPage from './SettingsPage'
 
 const page = () => {
   return (
-    <div>page</div>
+    <div>
+      <SettingsPage/>
+    </div>
   )
 }
 

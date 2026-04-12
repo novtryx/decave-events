@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MdEvent, MdPeople, MdConfirmationNumber, MdAttachMoney } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 import { getDashboardOverview } from "@/app/actions/events"; // 👈 adjust path
+import { spaceToUnderscore } from "@/lib/generalFunction";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -181,7 +182,7 @@ const DashboardOverview = () => {
                     {event.ticketsSold} Tickets Sold
                   </span>
                   <Link
-                    href={`/dashboard/events/${event.id}`}
+                    href={`/events/${spaceToUnderscore(event.title) }`}
                     className="text-[#FFD159] font-medium text-sm hover:underline"
                   >
                     View

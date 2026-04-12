@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MdPerson, MdEmail, MdLock, MdConfirmationNumber, MdCheckCircle } from "react-icons/md";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import Image from "next/image";
 // import GoogleLoginButton from "./GoogleLoginButton";
 
 interface RegisterFormProps {
@@ -163,9 +164,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       {/* Header */}
       <div className="px-8 py-7 flex flex-col items-center gap-1 text-center border-b border-border bg-surface">
         <Link href={logoHref} className="flex items-center gap-2 mb-3">
-          <span className="w-9 h-9 rounded-xl flex items-center justify-center bg-primary text-black">
-            <MdConfirmationNumber className="text-lg" />
-          </span>
+                    <Image src="/logo.svg" width={40} height={40} alt="logo"/>
+          
           <span className="text-xl font-extrabold tracking-tight text-white">
             {logoText}
             <span className="text-primary">.</span>

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getUserEvents } from "@/app/actions/events";
+import { spaceToUnderscore } from "@/lib/generalFunction";
 
 const Events = () => {
   const [search, setSearch] = useState("");
@@ -152,7 +153,7 @@ const Events = () => {
             {/* FOOTER ACTIONS */}
             <div className="flex items-center border-t border-[#1f1f1f]">
               <Link
-                href={`/dashboard/events/${event.id}`}
+                href={`/events/${spaceToUnderscore(event.title)}`}
                 className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-[#FFD159] hover:bg-[#1a1a1a] transition"
               >
                 View

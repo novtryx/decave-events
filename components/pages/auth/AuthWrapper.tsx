@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ReactNode } from "react";
 import { MdConfirmationNumber } from "react-icons/md";
 
@@ -22,9 +23,7 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
 
         {/* Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#FFD159] flex items-center justify-center">
-            <MdConfirmationNumber className="text-black text-lg" />
-          </div>
+          <Image src="/logo.svg" width={50} height={50} alt="logo"/>
           <span className="text-2xl font-extrabold text-white tracking-tight">
             De Cave<span className="text-[#FFD159]">.</span>
           </span>
@@ -83,14 +82,14 @@ const AuthWrapper = ({ children }: AuthWrapperProps) => {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 sm:px-8">
         
         {/* Mobile logo */}
-        <div className="flex lg:hidden items-center gap-2 mb-8">
+        {/* <div className="flex lg:hidden items-center gap-2 mb-8">
           <div className="w-9 h-9 rounded-xl bg-[#FFD159] flex items-center justify-center">
             <MdConfirmationNumber className="text-black" />
           </div>
           <span className="text-xl font-extrabold text-white">
             De Cave<span className="text-[#FFD159]">.</span>
           </span>
-        </div>
+        </div> */}
 
         {/* Form container */}
         <div className="w-full max-w-md bg-[#121212] border border-[#1f1f1f] rounded-2xl p-6 sm:p-8 shadow-lg">
