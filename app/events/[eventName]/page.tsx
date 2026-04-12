@@ -120,13 +120,13 @@ const EventPage = () => {
 
         {/* back button */}
         <div className="absolute top-5 left-5">
-          <Link
-            href="/events"
-            className="inline-flex items-center gap-2 text-white/70 text-sm bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl hover:text-white transition"
-          >
-            ← Back
-          </Link>
-        </div>
+  <button
+    onClick={() => router.back()}
+    className="inline-flex items-center gap-2 text-white/70 text-sm bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl hover:text-white transition"
+  >
+    ← Back
+  </button>
+</div>
 
         {/* hero text */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
