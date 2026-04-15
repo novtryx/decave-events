@@ -8,6 +8,8 @@ import { CgMail } from "react-icons/cg";
 import CryptoJS from 'crypto-js';
 import { initializePayment, InitializePayment } from "@/app/actions/events";
 import Button from "@/components/ui/Button";
+import { MdAnnouncement } from "react-icons/md";
+import { CiLocationArrow1 } from "react-icons/ci";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,6 +19,8 @@ type Person = {
   phone: string;
   eventId: number;
   ticketId: string;
+  howYouHeard:string;
+  city: string
 };
 
 type PersonErrors = {
@@ -94,12 +98,80 @@ function Field({
   );
 }
 
+function SelectField({
+  icon,
+  placeholder,
+  value,
+  onChange,
+  error,
+  colSpan,
+}: {
+  icon: React.ReactNode;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  error?: string;
+  colSpan?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-1 ${colSpan ?? ""}`}>
+      <div className="relative group">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-[#FFD159] transition">
+          {icon}
+        </span>
+
+        <select
+          className={`w-full bg-neutral-900/50 border p-4 pl-12 pr-10 rounded-2xl text-sm outline-none transition appearance-none
+            ${error
+              ? "border-red-500/60 bg-red-500/5 focus:border-red-500"
+              : "border-neutral-800 focus:border-[#FFD159] focus:bg-neutral-900"
+            }`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="">{placeholder}</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="twitter">Twitter (X)</option>
+          <option value="tiktok">TikTok</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="google_search">Google Search</option>
+          <option value="youtube">YouTube</option>
+          <option value="email">Email Newsletter</option>
+          <option value="referral">Friend / Referral</option>
+          <option value="influencer">Influencer / Creator</option>
+          <option value="online_ads">Online Ads</option>
+          <option value="event_platforms">Event Platforms</option>
+          <option value="flyer">Flyer / Poster</option>
+          <option value="radio_tv">Radio / TV</option>
+          <option value="community">Community / Religious Center</option>
+          <option value="past_event">Past Event</option>
+          <option value="other">Other</option>
+        </select>
+
+        {/* Dropdown arrow */}
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none">
+          ▼
+        </span>
+      </div>
+
+      {error && (
+        <p className="text-xs text-red-400 pl-1">{error}</p>
+      )}
+    </div>
+  );
+}
+
+
 // ─── Checkout Content ─────────────────────────────────────────────────────────
 
 const CheckoutContent = () => {
   const params = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [howYouHeard, setHowYouHeard] = useState("")
+  const [city, setCity] = useState("")
+
 
   const data = useMemo(() => {
     const encrypted = params.get("data");
@@ -122,13 +194,13 @@ const CheckoutContent = () => {
   const [assignOthers, setAssignOthers] = useState(false);
 
   const [buyer, setBuyer] = useState<Person>({
-    name: "", email: "", phone: "", eventId, ticketId,
+    name: "", email: "", phone: "", eventId, ticketId, howYouHeard, city
   });
   const [buyerErrors, setBuyerErrors] = useState<PersonErrors>({});
 
   const [attendees, setAttendees] = useState<Person[]>(
     Array.from({ length: qty - 1 }, () => ({
-      name: "", email: "", phone: "", eventId, ticketId,
+      name: "", email: "", phone: "", eventId, ticketId, howYouHeard, city
     }))
   );
   const [attendeeErrors, setAttendeeErrors] = useState<PersonErrors[]>(
@@ -269,6 +341,24 @@ const CheckoutContent = () => {
                   error={buyerErrors.email}
                   colSpan="md:col-span-2"
                 />
+               <SelectField 
+               icon={<MdAnnouncement/>}
+               value={howYouHeard}
+               onChange={setHowYouHeard}
+                placeholder="How did you hear about us"
+
+               />
+
+                <Field
+                  icon={<CiLocationArrow1 />}
+                  type="text"
+                  placeholder="Your City"
+                  value={city}
+                  onChange={setCity}
+                  // error={buyerErrors.email}
+                  colSpan="md:col-span-1"
+                />
+
               </div>
             </section>
 
