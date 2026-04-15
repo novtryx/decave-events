@@ -19,8 +19,8 @@ type Person = {
   phone: string;
   eventId: number;
   ticketId: string;
-  howYouHeard:string;
-  city: string
+  howDidYouHearAboutUs:string;
+  location: string
 };
 
 type PersonErrors = {
@@ -194,13 +194,13 @@ const CheckoutContent = () => {
   const [assignOthers, setAssignOthers] = useState(false);
 
   const [buyer, setBuyer] = useState<Person>({
-    name: "", email: "", phone: "", eventId, ticketId, howYouHeard, city
+    name: "", email: "", phone: "", eventId, ticketId, howDidYouHearAboutUs :howYouHeard, location: city
   });
   const [buyerErrors, setBuyerErrors] = useState<PersonErrors>({});
 
   const [attendees, setAttendees] = useState<Person[]>(
     Array.from({ length: qty - 1 }, () => ({
-      name: "", email: "", phone: "", eventId, ticketId, howYouHeard, city
+      name: "", email: "", phone: "", eventId, ticketId, howDidYouHearAboutUs :howYouHeard, location: city
     }))
   );
   const [attendeeErrors, setAttendeeErrors] = useState<PersonErrors[]>(
