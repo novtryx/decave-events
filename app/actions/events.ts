@@ -36,6 +36,8 @@ export type InitializePayment = {
   phone: string;
   eventId: number;
   ticketId: string;
+  location: string;
+  howDidYouHearAboutUs: string;
 };
 
 export async function createEvent(payload: CreateEventPayload): Promise<void> {
