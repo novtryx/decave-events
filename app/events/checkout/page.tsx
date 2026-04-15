@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useMemo } from "react";
+import { useState, Suspense, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { HiOutlineUser, HiOutlinePhone, HiOutlineTicket, HiOutlineShieldCheck } from "react-icons/hi2";
 import { RiToggleLine, RiToggleFill } from "react-icons/ri";
@@ -203,6 +203,24 @@ const CheckoutContent = () => {
       name: "", email: "", phone: "", eventId, ticketId, howDidYouHearAboutUs :howYouHeard, location: city
     }))
   );
+
+  useEffect(() => {
+  setAttendees((prev) =>
+    prev.map((attendee) => ({
+      ...attendee,
+      howDidYouHearAboutUs: howYouHeard,
+      location: city,
+    }))
+  );
+}, [howYouHeard, city]);
+
+useEffect(() => {
+  setBuyer((prev) => ({
+    ...prev,
+    howDidYouHearAboutUs: howYouHeard,
+    location: city,
+  }));
+}, [howYouHeard, city]);
   const [attendeeErrors, setAttendeeErrors] = useState<PersonErrors[]>(
     Array.from({ length: qty - 1 }, () => ({}))
   );
@@ -344,7 +362,7 @@ const CheckoutContent = () => {
                <SelectField 
                icon={<MdAnnouncement/>}
                value={howYouHeard}
-               onChange={setHowYouHeard}
+               onChange={(v) => setHowYouHeard(v)}
                 placeholder="How did you hear about us"
 
                />
@@ -354,7 +372,7 @@ const CheckoutContent = () => {
                   type="text"
                   placeholder="Your City"
                   value={city}
-                  onChange={setCity}
+                  onChange={(v)=> setCity(v)}
                   // error={buyerErrors.email}
                   colSpan="md:col-span-1"
                 />
