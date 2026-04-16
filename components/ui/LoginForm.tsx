@@ -95,6 +95,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   setLoading(false);
 
   // 👇 THIS is the new important part
+  console.log(result)
   if (!result?.success) {
     setErrors({
       general: result?.message ?? "Invalid email or password.",

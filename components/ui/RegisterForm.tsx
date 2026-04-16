@@ -133,29 +133,49 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setTouched({ name: true, email: true, businessName: true, password: true, confirmPassword: true, address: true, });
+  e.preventDefault();
 
-    const allErrors = validate(fields);
-    if (Object.keys(allErrors).length > 0) {
-      setErrors(allErrors);
-      return;
-    }
+  setTouched({
+    name: true,
+    email: true,
+    businessName: true,
+    password: true,
+    confirmPassword: true,
+    address: true,
+  });
 
-    setErrors({});
-    setLoading(true);
-    try {
-      await onSubmit?.({
-        name: fields.name, email: fields.email, password: fields.password,
-        businessName: fields.businessName,
-        address: fields.address
-      });
-    } catch (err: any) {
-      setErrors({ general: err?.message ?? "Something went wrong. Please try again." });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const allErrors = validate(fields);
+
+  if (Object.keys(allErrors).length > 0) {
+    setErrors(allErrors);
+    return;
+  }
+
+  setErrors({});
+  setLoading(true);
+
+  const result: any = await onSubmit?.({
+    name: fields.name,
+    email: fields.email,
+    password: fields.password,
+    businessName: fields.businessName,
+    address: fields.address,
+  });
+
+  setLoading(false);
+
+  // 👇 IMPORTANT: handle backend response here
+  if (!result?.success) {
+    setErrors({
+      general:
+        result?.message || "Something went wrong. Please try again.",
+    });
+
+    return;
+  }
+ window.location.href = "/login"
+  // success case (optional redirect handled in parent)
+};
 
   return (
     <div

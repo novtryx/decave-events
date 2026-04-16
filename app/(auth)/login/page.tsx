@@ -8,7 +8,7 @@ const page = () => {
     <LoginForm
       onSubmit={async ({ email, password }) => {
         // wire up your auth here
-        await loginUser({
+       return await loginUser({
           email,
           password,
         });

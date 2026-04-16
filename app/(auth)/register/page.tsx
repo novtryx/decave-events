@@ -8,7 +8,7 @@ const page = () => {
     <RegisterForm
       onSubmit={async ({ email, password, name, businessName, address }) => {
               // wire up your auth here
-              await RegisterUser({
+             return await RegisterUser({
                 email,
                 password,
                 name,

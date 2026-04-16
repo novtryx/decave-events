@@ -40,14 +40,24 @@ export async function loginUser(payload: LoginPayload): Promise<any> {
 
 }
 
-export async function RegisterUser(payload: RegisterPayload): Promise<void> {
+export async function RegisterUser(payload: RegisterPayload): Promise<any> {
   noStore();
-  const res = await authFetch<any>("/users/register", {
-    method: "POST",
-    body: payload,
-  });
 
- redirect("/login"); 
+
+   noStore();
+
+  return handleAction(async () => {
+    const res = await authFetch<any>("/users/register", {
+      method: "POST",
+      body: payload,
+    });
+
+    await setAccessToken(res.accessToken);
+
+    return res;
+  });
+  
+
 }
 
 
