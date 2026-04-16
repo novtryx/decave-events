@@ -9,6 +9,18 @@ type FetchOptions = {
   next?: { revalidate?: number | false; tags?: string[] };
 };
 
+export class ApiError extends Error {
+  statusCode: number;
+  error: string;
+
+  constructor(message: string, statusCode: number, error: string) {
+    super(message);
+    this.name = "ApiError";
+    this.statusCode = statusCode;
+    this.error = error;
+  }
+}
+
 export async function fetcher<T>(
   url: string,
   options: FetchOptions = {}
@@ -16,14 +28,12 @@ export async function fetcher<T>(
   const { timeout = 30000, body, headers, cache, next, ...rest } = options;
 
   if (!BASE_URL) {
-    throw new Error("API_URL environment variable is not set");
+    throw new ApiError("API_URL environment variable is not set", 500, "Configuration Error");
   }
 
   const fullUrl = `${BASE_URL}${url}`;
-
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
-
   const isFormData = body instanceof FormData;
 
   try {
@@ -42,28 +52,31 @@ export async function fetcher<T>(
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-  let errorData: any;
+      let errorData: any;
+      try {
+        errorData = await res.json();
+      } catch {
+        errorData = { message: await res.text(), statusCode: res.status, error: res.statusText };
+      }
 
-  try {
-    errorData = await res.json();
-  } catch {
-    errorData = { message: await res.text() };
-  }
+      // 👇 log on the server so it shows in Vercel runtime logs
+      console.error(`[API Error] ${options.method ?? "GET"} ${fullUrl}`, {
+        statusCode: errorData.statusCode ?? res.status,
+        message: errorData.message,
+        error: errorData.error,
+      });
 
-  const error = new Error(
-    errorData.message || "Something went wrong"
-  ) as any;
-
-  error.statusCode = errorData.statusCode;
-  error.error = errorData.error;
-
-  throw error;
-}
+      throw new ApiError(
+        errorData.message || "Something went wrong",
+        errorData.statusCode ?? res.status,
+        errorData.error ?? res.statusText,
+      );
+    }
 
     return res.json();
   } catch (error: any) {
     if (error.name === "AbortError") {
-      throw new Error(`Request timeout after ${timeout}ms`);
+      throw new ApiError(`Request timed out after ${timeout}ms`, 408, "Timeout");
     }
     throw error;
   }

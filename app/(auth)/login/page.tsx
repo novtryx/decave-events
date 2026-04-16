@@ -12,7 +12,7 @@ const page = () => {
           email,
           password,
         });
-        console.log({ email, password });
+        // console.log({ email, password });
       }}
       logoHref="/"
       registerHref="/register"
