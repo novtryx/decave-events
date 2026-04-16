@@ -4,6 +4,7 @@ import { authFetch } from "@/lib/authFetch";
 import { deleteAccessToken, setAccessToken } from "@/lib/authCookies"; 
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import { handleAction } from "@/lib/handleAction";
 
 
 type LoginPayload = {
@@ -23,16 +24,20 @@ type LoginResponse = {
   accessToken: string;
 };
 
-export async function loginUser(payload: LoginPayload): Promise<void> {
-  noStore();
-  const res = await authFetch<LoginResponse>("/users/login", {
-    method: "POST",
-    body: payload,
+export async function loginUser(payload: LoginPayload): Promise<any> {
+    noStore();
+
+  return handleAction(async () => {
+    const res = await authFetch<LoginResponse>("/users/login", {
+      method: "POST",
+      body: payload,
+    });
+
+    await setAccessToken(res.accessToken);
+
+    return res;
   });
 
-await setAccessToken(res.accessToken);
-
-redirect("/dashboard"); 
 }
 
 export async function RegisterUser(payload: RegisterPayload): Promise<void> {

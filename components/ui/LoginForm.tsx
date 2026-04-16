@@ -6,6 +6,7 @@ import { MdEmail, MdLock, MdConfirmationNumber } from "react-icons/md";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 // import GoogleLoginButton from "./GoogleLoginButton";
 
 interface LoginFormProps {
@@ -49,6 +50,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   forgotPasswordHref = "/forgot-password",
   className = "",
 }) => {
+  const router =  useRouter()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
@@ -76,28 +78,33 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setTouched({ email: true, password: true });
+  e.preventDefault();
+  setTouched({ email: true, password: true });
 
-    const fieldErrors = validate(email, password);
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors);
-      return;
-    }
+  const fieldErrors = validate(email, password);
+  if (Object.keys(fieldErrors).length > 0) {
+    setErrors(fieldErrors);
+    return;
+  }
 
-    setErrors({});
-    setLoading(true);
-    try {
-      await onSubmit?.({ email, password });
-    } catch (err: any) {
-      setErrors({
-        general: err?.message ?? "Invalid email or password.",
+  setErrors({});
+  setLoading(true);
 
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const result: any = await onSubmit?.({ email, password });
+
+  setLoading(false);
+
+  // 👇 THIS is the new important part
+  if (!result?.success) {
+    setErrors({
+      general: result?.message ?? "Invalid email or password.",
+    });
+    return;
+  }
+
+  router.push("/dashboard")
+  // success case handled outside or redirect happens
+};
 
   return (
     <div
