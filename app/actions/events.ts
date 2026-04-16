@@ -28,6 +28,7 @@ export type CreateEventPayload = {
   organizerPays?: boolean;
   banner: string;
   tickets: CreateTicketPayload[];
+  otherImages?: string[];
 };
 
 export type InitializePayment = {
@@ -71,6 +72,16 @@ return res
 
 }
 
+export async function updateEvent(payload: Event[], id: number): Promise<any> {
+  noStore();
+  const res = await protectedFetch<any>(`/events/${id}`, {
+    method: "PATCH",
+    body: payload
+  });
+
+return res
+
+}
 
 export async function initializePayment(payload: InitializePayment[]): Promise<any> {
   noStore();

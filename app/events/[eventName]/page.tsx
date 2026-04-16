@@ -28,6 +28,7 @@ type Event = {
   theme: string;
   description: string;
   banner: string | null;
+  otherImages: string[] | null; // 👈 added
   visibilty: boolean;
   organizerPays: boolean;
   tickets: Ticket[];
@@ -43,16 +44,17 @@ const MAX_TICKETS = 5;
 
 const EventPage = () => {
   const params = useParams();
-  const router = useRouter()
-  const eventName =decodeURIComponent(params.eventName as string);
+  const router = useRouter();
+  const eventName = decodeURIComponent(params.eventName as string);
 
   const { data: event, isLoading, error } = useQuery<Event>({
     queryKey: ["event", eventName],
-    queryFn: () => getEventByName(  underscoreToSpace(eventName) ),
+    queryFn: () => getEventByName(underscoreToSpace(eventName)),
   });
 
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
+  const [lightboxImg, setLightboxImg] = useState<string | null>(null); // 👈 lightbox state
 
   if (isLoading) return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
@@ -99,8 +101,31 @@ const EventPage = () => {
   const total = selectedTicket ? selectedTicket.price * qty : 0;
   const fmt = (n: number) => `₦${n.toLocaleString("en-NG")}`;
 
+  const hasOtherImages = event.otherImages && event.otherImages.length > 0;
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
+
+      {/* LIGHTBOX */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+          onClick={() => setLightboxImg(null)}
+        >
+          <button
+            className="absolute top-5 right-5 text-white/60 hover:text-white text-3xl leading-none"
+            onClick={() => setLightboxImg(null)}
+          >
+            ✕
+          </button>
+          <img
+            src={lightboxImg}
+            alt="Full view"
+            className="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* HERO BANNER */}
       <div className="relative w-full h-[480px] md:h-[520px] overflow-hidden">
@@ -115,20 +140,17 @@ const EventPage = () => {
             🎪
           </div>
         )}
-        {/* gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-[#0a0a0a]" />
 
-        {/* back button */}
         <div className="absolute top-5 left-5">
-  <button
-    onClick={() => router.back()}
-    className="inline-flex items-center gap-2 text-white/70 text-sm bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl hover:text-white transition"
-  >
-    ← Back
-  </button>
-</div>
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center gap-2 text-white/70 text-sm bg-black/30 backdrop-blur-sm px-3 py-2 rounded-xl hover:text-white transition"
+          >
+            ← Back
+          </button>
+        </div>
 
-        {/* hero text */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
           <div className="flex flex-wrap gap-2 mb-3">
             <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#FFD159] text-black uppercase tracking-wide">
@@ -156,7 +178,11 @@ const EventPage = () => {
           {/* INFO STRIP */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-[#1e1e1e] border border-[#1e1e1e] rounded-2xl overflow-hidden mb-8">
             {[
-              { icon: "📅", label: "Date", val: new Date(event.eventDate).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }), sub: new Date(event.eventDate).toLocaleDateString("en-NG", { weekday: "long" }) },
+              {
+                icon: "📅", label: "Date",
+                val: new Date(event.eventDate).toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" }),
+                sub: new Date(event.eventDate).toLocaleDateString("en-NG", { weekday: "long" }),
+              },
               { icon: "🕖", label: "Time", val: formatTime(event.eventDate), sub: "WAT" },
               { icon: "📍", label: "Venue", val: event.venue, sub: event.address },
             ].map((item) => (
@@ -176,10 +202,100 @@ const EventPage = () => {
           </div>
 
           {/* THEME */}
-          <div className="mb-8">
-            <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold mb-3">Theme</p>
-            <p className="text-gray-400 text-base">{event.theme}</p>
-          </div>
+          {event.theme && (
+            <div className="mb-8">
+              <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold mb-3">Theme</p>
+              <p className="text-gray-400 text-base">{event.theme}</p>
+            </div>
+          )}
+
+          {/* OTHER IMAGES GALLERY */}
+          {hasOtherImages && (
+            <div className="mb-8">
+              <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold mb-3">
+                Gallery · {event.otherImages!.length} photo{event.otherImages!.length > 1 ? "s" : ""}
+              </p>
+
+              {event.otherImages!.length === 1 && (
+                <div
+                  className="rounded-2xl overflow-hidden border border-[#1e1e1e] cursor-zoom-in group"
+                  onClick={() => setLightboxImg(event.otherImages![0])}
+                >
+                  <img
+                    src={event.otherImages![0]}
+                    alt="Event photo"
+                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
+
+              {event.otherImages!.length === 2 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {event.otherImages!.map((img, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl overflow-hidden border border-[#1e1e1e] cursor-zoom-in group"
+                      onClick={() => setLightboxImg(img)}
+                    >
+                      <img
+                        src={img}
+                        alt={`Event photo ${i + 1}`}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {event.otherImages!.length === 3 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {/* first image spans full width */}
+                  <div
+                    className="col-span-2 rounded-2xl overflow-hidden border border-[#1e1e1e] cursor-zoom-in group"
+                    onClick={() => setLightboxImg(event.otherImages![0])}
+                  >
+                    <img
+                      src={event.otherImages![0]}
+                      alt="Event photo 1"
+                      className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  {/* remaining two side by side */}
+                  {event.otherImages!.slice(1).map((img, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl overflow-hidden border border-[#1e1e1e] cursor-zoom-in group"
+                      onClick={() => setLightboxImg(img)}
+                    >
+                      <img
+                        src={img}
+                        alt={`Event photo ${i + 2}`}
+                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {event.otherImages!.length === 4 && (
+                <div className="grid grid-cols-2 gap-2">
+                  {event.otherImages!.map((img, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl overflow-hidden border border-[#1e1e1e] cursor-zoom-in group"
+                      onClick={() => setLightboxImg(img)}
+                    >
+                      <img
+                        src={img}
+                        alt={`Event photo ${i + 1}`}
+                        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* ORGANIZER */}
           <div>
@@ -243,7 +359,6 @@ const EventPage = () => {
                     </div>
                   </div>
 
-                  {/* availability bar */}
                   <div>
                     <p className="text-xs text-gray-600 mb-1.5">{remaining} tickets remaining</p>
                     <div className="h-1 bg-[#1e1e1e] rounded-full overflow-hidden">
@@ -254,7 +369,6 @@ const EventPage = () => {
                     </div>
                   </div>
 
-                  {/* QTY CONTROLS */}
                   {isSelected && (
                     <div
                       className="flex items-center justify-between mt-4 pt-4 border-t border-[#1e1e1e]"
@@ -311,24 +425,22 @@ const EventPage = () => {
             </div>
 
             <Button
-onClick={() => {
-  const data = {
-  eventId: event.id,
-  ticketId: selectedTicket?.id,
-  qty,
-  total,
-  orgPays: event.organizerPays,
-};
-
-const encrypted = CryptoJS.AES.encrypt(
-  JSON.stringify(data),
-  "devave-query-secret"
-).toString();
-
-router.push(`/events/checkout?data=${encodeURIComponent(encrypted)}`);
-}}             disabled={!selectedTicketId}
-              className="w-full py-4 rounded-xl bg-[#FFD159] text-black text-base font-black tracking-tight
-              disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 transition"
+              onClick={() => {
+                const data = {
+                  eventId: event.id,
+                  ticketId: selectedTicket?.id,
+                  qty,
+                  total,
+                  orgPays: event.organizerPays,
+                };
+                const encrypted = CryptoJS.AES.encrypt(
+                  JSON.stringify(data),
+                  "devave-query-secret"
+                ).toString();
+                router.push(`/events/checkout?data=${encodeURIComponent(encrypted)}`);
+              }}
+              disabled={!selectedTicketId}
+              className="w-full py-4 rounded-xl bg-[#FFD159] text-black text-base font-black tracking-tight disabled:opacity-30 disabled:cursor-not-allowed hover:opacity-90 transition"
             >
               {selectedTicketId
                 ? `Purchase ${qty} ticket${qty > 1 ? "s" : ""} · ${fmt(total)}`

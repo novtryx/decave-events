@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { MdArrowBack, MdCloudUpload, MdClose, MdImage, MdAdd, MdLock } from "react-icons/md";
 import { uploadFile } from "@/app/actions/upload";
-import { getEventByName } from "@/app/actions/events";
+import { getEventByName, updateEvent } from "@/app/actions/events";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { underscoreToSpace } from "@/lib/generalFunction";
@@ -215,12 +215,11 @@ const EditEventPage = () => {
   };
 
   // ─── Submit ─────────────────────────────────────────────────────────────────
-const isPending = false
-//   const { mutate, isPending } = useMutation({
-//     mutationFn: (payload: any) => updateEvent(Number(eventId), payload),
-//     onSuccess: () => router.push(`/dashboard/events`),
-//     onError: (err) => console.error("Failed to update event:", err),
-//   });
+  const { mutate, isPending } = useMutation({
+    mutationFn: (payload: any) => updateEvent(payload, Number(event?.id)),
+    onSuccess: () => router.push(`/dashboard/events`),
+    onError: (err) => console.error("Failed to update event:", err),
+  });
 
   const handleSubmit = () => {
     if (isUploading || otherImagesUploading.some(Boolean)) {
@@ -232,11 +231,11 @@ const isPending = false
       return;
     }
 
-    // mutate({
-    //   ...form,
-    //   banner: bannerUrl,
-    //   otherImages: otherImageUrls.filter(Boolean) as string[],
-    // });
+    mutate({
+      ...form,
+      banner: bannerUrl,
+      otherImages: otherImageUrls.filter(Boolean) as string[],
+    });
   };
 
   const anyUploading = isUploading || otherImagesUploading.some(Boolean);
