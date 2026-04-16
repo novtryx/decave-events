@@ -5,103 +5,83 @@ import { deleteAccessToken, setAccessToken } from "@/lib/authCookies";
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 
+
 type LoginPayload = {
   email: string;
   password: string;
 };
 
 type RegisterPayload = {
-  email: string;
-  name: string;
-  password: string;
-  businessName: string;
-  address: string;
-};
+    email: string;
+    name: string;
+    password:  string;
+    businessName: string;
+    address: string
+}
 
 type LoginResponse = {
   accessToken: string;
 };
 
-type ActionResult = {
-  success: boolean;
-  error?: string;
-};
-
-export async function loginUser(payload: LoginPayload): Promise<ActionResult> {
+export async function loginUser(payload: LoginPayload): Promise<void> {
   noStore();
-  try {
-    const res = await authFetch<LoginResponse>("/users/login", {
-      method: "POST",
-      body: payload,
-    });
-    await setAccessToken(res.accessToken);
-  } catch (err: any) {
-    return { success: false, error: err.message ?? "Login failed" };
-  }
+  const res = await authFetch<LoginResponse>("/users/login", {
+    method: "POST",
+    body: payload,
+  });
 
-  redirect("/dashboard"); // ✅ outside try/catch so it works — redirect throws internally
+await setAccessToken(res.accessToken);
+
+redirect("/dashboard"); 
 }
 
-export async function RegisterUser(payload: RegisterPayload): Promise<ActionResult> {
+export async function RegisterUser(payload: RegisterPayload): Promise<void> {
   noStore();
-  try {
-    await authFetch<any>("/users/register", {
-      method: "POST",
-      body: payload,
-    });
-  } catch (err: any) {
-    return { success: false, error: err.message ?? "Registration failed" };
-  }
+  const res = await authFetch<any>("/users/register", {
+    method: "POST",
+    body: payload,
+  });
 
-  redirect("/login");
+ redirect("/login"); 
 }
+
 
 export async function logout() {
   await deleteAccessToken();
   redirect("/login");
 }
 
-export async function forgotPassword(email: string): Promise<ActionResult & { message?: string }> {
+export async function forgotPassword(email: string): Promise<{ message: string }> {
   noStore();
-  try {
-    const res = await fetch(`${process.env.API_URL}/users/forgot-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+  const res = await fetch(`${process.env.API_URL}/users/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { success: false, error: data.message ?? "Something went wrong" };
-    }
-
-    return { success: true, message: data.message };
-  } catch (err: any) {
-    return { success: false, error: err.message ?? "Something went wrong" };
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Something went wrong");
   }
+
+  return res.json();
 }
 
 export async function resetPassword(
   token: string,
   newPassword: string
-): Promise<ActionResult & { message?: string }> {
+): Promise<{ message: string }> {
   noStore();
-  try {
-    const res = await fetch(`${process.env.API_URL}/users/reset-password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, newPassword }),
-    });
+  const res = await fetch(`${process.env.API_URL}/users/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, newPassword }),
+  });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { success: false, error: data.message ?? "Something went wrong" };
-    }
-
-    return { success: true, message: data.message };
-  } catch (err: any) {
-    return { success: false, error: err.message ?? "Something went wrong" };
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Something went wrong");
   }
+
+  return res.json();
 }

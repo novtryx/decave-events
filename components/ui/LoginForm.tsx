@@ -76,30 +76,28 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setTouched({ email: true, password: true });
+    e.preventDefault();
+    setTouched({ email: true, password: true });
 
-  const fieldErrors = validate(email, password);
-  if (Object.keys(fieldErrors).length > 0) {
-    setErrors(fieldErrors);
-    return;
-  }
+    const fieldErrors = validate(email, password);
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      return;
+    }
 
-  setErrors({});
-  setLoading(true);
+    setErrors({});
+    setLoading(true);
+    try {
+      await onSubmit?.({ email, password });
+    } catch (err: any) {
+      setErrors({
+        general: err?.message ?? "Invalid email or password.",
 
-  const result: any = await onSubmit?.({ email, password });
-
-  if (result && !result?.success) {
-    setErrors({ general: result?.error ?? "Invalid email or password." });
-    setLoading(false);
-    return;
-  }
-
-  // if success, redirect happens server-side so no need to do anything here
-  // keep loading true so the button stays disabled while redirect occurs
-};
-
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
