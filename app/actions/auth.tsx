@@ -44,7 +44,6 @@ export async function RegisterUser(payload: RegisterPayload): Promise<any> {
   noStore();
 
 
-   noStore();
 
   return handleAction(async () => {
     const res = await authFetch<any>("/users/register", {

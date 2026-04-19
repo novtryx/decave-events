@@ -3,6 +3,7 @@ import { protectedFetch } from "@/lib/protectedFetch";
 import { publicFetch } from "@/lib/publicFetch";
 import { redirect } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
+import { handleAction } from "@/lib/handleAction";
 
 
 // types/event.ts
@@ -41,8 +42,10 @@ export type InitializePayment = {
   howDidYouHearAboutUs: string;
 };
 
-export async function createEvent(payload: CreateEventPayload): Promise<void> {
+export async function createEvent(payload: CreateEventPayload): Promise<any> {
   noStore();
+
+
   const res = await protectedFetch<any>("/events", {
     method: "POST",
     body: payload,
