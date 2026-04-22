@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CryptoJS from "crypto-js";
 import { underscoreToSpace } from "@/lib/generalFunction";
 
@@ -16,6 +16,8 @@ type Ticket = {
   price: number;
   qtySold: number;
   startQty: number;
+  startDate: Date;
+  stopdate: Date;
 };
 
 type Event = {
@@ -38,6 +40,7 @@ type Event = {
     email: string;
     businessName: string;
   };
+  approved: boolean;
 };
 
 const MAX_TICKETS = 5;
@@ -51,6 +54,26 @@ const EventPage = () => {
     queryKey: ["event", eventName],
     queryFn: () => getEventByName(underscoreToSpace(eventName)),
   });
+
+ useEffect(() => {
+  if (!event?.id) return; // ⛔ wait until event is loaded
+
+  const trackVisit = async () => {
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${event.id}/visit`,
+        {
+          method: "POST",
+        }
+      );
+    } catch (err) {
+      // silent fail (don’t break UX if analytics fails)
+      console.error("Visit tracking failed", err);
+    }
+  };
+
+  trackVisit();
+}, [event?.id]);
 
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [qty, setQty] = useState(1);
@@ -315,29 +338,43 @@ const EventPage = () => {
         {/* RIGHT — TICKETS */}
         <div className="p-6 md:p-8 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto">
           <div className="mb-6">
-            <h2 className="text-2xl font-black tracking-tight mb-1">Get Tickets</h2>
-            <p className="text-gray-500 text-sm">One type per order · max 5 tickets</p>
+            <h2 className="text-2xl font-black tracking-tight mb-1">{event.approved ? "Get Tickets":"Ticket Purchase Not Allowed"}</h2>
+            <p className="text-gray-500 text-sm">{event.approved ? "One type per order · max 5 tickets" : "This Event is Yet to be Approved By DeCave Management" }</p>
           </div>
 
           {/* TICKET CARDS */}
-          <div className="flex flex-col gap-3 mb-4">
+          {
+            event.approved && 
+           <div className="flex flex-col gap-3 mb-4">
             {event.tickets?.map((ticket) => {
               const isSelected = selectedTicketId === ticket.id;
-              const isDimmed = selectedTicketId !== null && !isSelected;
-              const remaining = ticket.startQty - ticket.qtySold;
+              const now = new Date();
+
+              const isDimmed =
+                (selectedTicketId !== null && !isSelected) ||
+                new Date(ticket.startDate) > now || new Date(ticket.stopdate) < now; 
+                const remaining = ticket.startQty - ticket.qtySold;
               const soldPct = Math.round((ticket.qtySold / ticket.startQty) * 100);
 
               return (
                 <div
                   key={ticket.id}
-                  onClick={() => !isDimmed && selectTicket(ticket.id)}
-                  className={`border rounded-2xl p-5 transition-all duration-200 ${
-                    isSelected
+                  onClick={() => {
+                const now = Date.now();
+
+                const hasStarted = new Date(ticket.startDate).getTime() <= now;
+                const notEnded = new Date(ticket.stopdate).getTime() >= now;
+
+                if (hasStarted && notEnded) {
+                  selectTicket(ticket.id);
+                }
+              }}
+                  className={`border rounded-2xl p-5 transition-all duration-200 ${isSelected
                       ? "border-[#FFD159] bg-[#FFD159]/5 cursor-pointer"
                       : isDimmed
-                      ? "border-[#1e1e1e] bg-[#111] opacity-35 cursor-default"
-                      : "border-[#1e1e1e] bg-[#111] hover:border-[#333] cursor-pointer"
-                  }`}
+                        ? "border-[#1e1e1e] bg-[#111] opacity-35 cursor-default"
+                        : "border-[#1e1e1e] bg-[#111] hover:border-[#333] cursor-pointer"
+                    }`}
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div>
@@ -360,7 +397,7 @@ const EventPage = () => {
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-600 mb-1.5">{remaining} tickets remaining</p>
+                    <p className="text-xs text-gray-600 mb-1.5"> {new Date(ticket.startDate)> now ? "Ticket is not yet on Sales": new Date(ticket.stopdate) < now ? "Ticket Sales Ended" :"Limited tickets remaining"} </p>
                     <div className="h-1 bg-[#1e1e1e] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#FFD159] rounded-full"
@@ -400,6 +437,9 @@ const EventPage = () => {
               );
             })}
           </div>
+           
+          }
+         
 
           {/* SUMMARY */}
           <div className="bg-[#111] border border-[#1e1e1e] rounded-2xl p-5">

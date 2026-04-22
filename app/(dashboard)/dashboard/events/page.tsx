@@ -20,6 +20,8 @@ const Events = () => {
   if (isLoading) return <p className="text-white p-6">Loading...</p>;
   if (error) return <p className="text-red-400 p-6">Something went wrong</p>;
 
+  console.log("data==", data);
+  
   const filteredEvents = (data ?? []).filter((event: any) => {
     const matchQ =
       event.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -73,6 +75,8 @@ const Events = () => {
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto flex flex-col gap-6">
+      
+      
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-white">Your Events</h1>
@@ -111,18 +115,33 @@ const Events = () => {
       {/* EVENTS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredEvents.map((event: any) => {
-          const isCopied = copiedId === event.id;
+          const isCopied = copiedId === event?.id;
 
           return (
             <div
-              key={event.id}
-              className="bg-[#121212] rounded-2xl border border-[#1f1f1f] hover:border-[#2a2a2a] transition flex flex-col overflow-hidden"
+              key={event?.id}
+              className="relative bg-[#121212] rounded-2xl border border-[#1f1f1f] hover:border-[#2a2a2a] transition flex flex-col overflow-hidden"
             >
+  
+  {/* APPROVAL BADGE */}
+  <div className="absolute top-3 right-3 z-10">
+    {event?.approved ? (
+      <span className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-black text-green-400 border border-green-500/20">
+        <MdCheck size={12} />
+        Approved
+      </span>
+    ) : (
+      <span className="text-xs px-2 py-1 rounded-full bg-black text-yellow-400 border border-yellow-500/20">
+        Not Approved
+      </span>
+    )}
+  </div>
+
               {/* BANNER */}
-              {event.banner ? (
+              {event?.banner ? (
                 <img
-                  src={event.banner}
-                  alt={event.title}
+                  src={event?.banner}
+                  alt={event?.title}
                   className="w-full h-36 object-cover"
                 />
               ) : (
@@ -136,36 +155,40 @@ const Events = () => {
                 {/* TITLE + TYPE */}
                 <div className="flex items-start justify-between gap-2">
                   <h2 className="font-semibold text-white text-base leading-tight">
-                    {event.title}
+                    {event?.title}
                   </h2>
                   <span className="text-xs font-medium px-2 py-1 rounded-full bg-[#FFD159] text-black whitespace-nowrap">
-                    {event.type}
+                    {event?.type}
                   </span>
                 </div>
 
                 {/* DATE + VENUE */}
                 <div className="flex flex-col gap-1">
                   <p className="text-gray-400 text-xs flex items-center gap-1">
-                    📅 {formatDate(event.eventDate)} · {formatTime(event.eventDate)}
+                    📅 {formatDate(event?.eventDate)} · {formatTime(event?.eventDate)}
                   </p>
                   <p className="text-gray-400 text-xs flex items-center gap-1">
-                    📍 {event.venue}
+                    📍 {event?.venue}
                   </p>
                 </div>
 
                 {/* STATS */}
-                <div className="flex gap-2 flex-wrap">
-                  <span className="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded-lg">
-                    👥 <span className="font-semibold text-white">{event.attendeesCount}</span> attendees
-                  </span>
-                  <span className="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded-lg">
-                    🎟 <span className="font-semibold text-white">{event.tickets?.length ?? 0}</span> ticket types
-                  </span>
-                </div>
+              <div className="flex gap-2 flex-wrap">
+  <span className="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded-lg">
+    👥 <span className="font-semibold text-white">{event?.attendeesCount}</span> attendees
+  </span>
+  <span className="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded-lg">
+    🎟 <span className="font-semibold text-white">{event?.tickets?.length ?? 0}</span> ticket types
+  </span>
+  {/* ✅ ADD THIS */}
+  <span className="text-xs bg-[#1a1a1a] text-gray-300 px-3 py-1 rounded-lg">
+    👁 <span className="font-semibold text-white">{event?.visitsCount ?? 0}</span> views
+  </span>
+</div>
 
                 {/* BADGES */}
                 <div className="flex gap-2 flex-wrap">
-                  {event.organizerPays && (
+                  {event?.organizerPays && (
                     <span className="text-xs px-2 py-1 rounded-full bg-green-500/10 text-green-400">
                       ✓ organizer pays fees
                     </span>
@@ -173,11 +196,11 @@ const Events = () => {
                   <span className="text-xs flex items-center gap-1">
                     <span
                       className={`w-2 h-2 rounded-full inline-block ${
-                        event.visibilty ? "bg-green-500" : "bg-gray-500"
+                        event?.visibilty ? "bg-green-500" : "bg-gray-500"
                       }`}
                     />
                     <span className="text-gray-400">
-                      {event.visibilty ? "Public" : "Private"}
+                      {event?.visibilty ? "Public" : "Private"}
                     </span>
                   </span>
                 </div>
@@ -186,14 +209,14 @@ const Events = () => {
               {/* FOOTER ACTIONS */}
               <div className="flex items-center border-t border-[#1f1f1f]">
                 <Link
-                  href={`/events/${spaceToUnderscore(event.title)}`}
+                  href={`/events/${spaceToUnderscore(event?.title)}`}
                   className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-[#FFD159] hover:bg-[#1a1a1a] transition"
                 >
                   View
                 </Link>
                 <div className="w-px h-5 bg-[#1f1f1f]" />
                 <Link
-                  href={`/dashboard/events/edit/${spaceToUnderscore(event.title)}`}
+                  href={`/dashboard/events/edit/${spaceToUnderscore(event?.title)}`}
                   className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-gray-400 hover:text-[#FFD159] hover:bg-[#1a1a1a] transition"
                 >
                   Edit
@@ -217,9 +240,9 @@ const Events = () => {
                   )}
                 </button>
                 <div className="w-px h-5 bg-[#1f1f1f]" />
-                <button className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-red-400 hover:bg-[#1a1a1a] transition">
+                {/* <button className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-red-400 hover:bg-[#1a1a1a] transition">
                   Delete
-                </button>
+                </button> */}
               </div>
             </div>
           );
