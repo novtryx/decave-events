@@ -363,9 +363,8 @@ const EventPage = () => {
                 const now = new Date();
 
 
-                const hasStarted = new Date(ticket.startDate).getTime() <= now;
-                const notEnded = new Date(ticket.stopdate).getTime() >= now;
-
+                const hasStarted = new Date(ticket.startDate) <= now;
+  const notEnded = new Date(ticket.stopdate) >= now;
                 if (hasStarted && notEnded) {
                   selectTicket(ticket.id);
                 }
