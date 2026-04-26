@@ -360,7 +360,8 @@ const EventPage = () => {
                 <div
                   key={ticket.id}
                   onClick={() => {
-                const now = Date.now();
+                const now = new Date();
+
 
                 const hasStarted = new Date(ticket.startDate).getTime() <= now;
                 const notEnded = new Date(ticket.stopdate).getTime() >= now;
