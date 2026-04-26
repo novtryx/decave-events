@@ -348,7 +348,7 @@ const EventPage = () => {
            <div className="flex flex-col gap-3 mb-4">
             {event.tickets?.map((ticket) => {
               const isSelected = selectedTicketId === ticket.id;
-              const now = new Date();
+              const now = new Date(new Date().getTime() + 1 * 60 * 60 * 1000); 
 
               const isDimmed =
                 (selectedTicketId !== null && !isSelected) ||
@@ -360,7 +360,7 @@ const EventPage = () => {
                 <div
                   key={ticket.id}
                   onClick={() => {
-                const now = new Date();
+                const now = new Date(new Date().getTime() + 1 * 60 * 60 * 1000); 
 
 
                 const hasStarted = new Date(ticket.startDate) <= now;
