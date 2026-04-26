@@ -16,8 +16,8 @@ type Ticket = {
   price: number;
   qtySold: number;
   startQty: number;
-  startDate: Date;
-  stopdate: Date;
+  startDate: string;
+  stopdate: string;
 };
 
 type Event = {
