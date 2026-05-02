@@ -16,8 +16,8 @@ type Ticket = {
   price: number;
   qtySold: number;
   startQty: number;
-  startDate: Date;
-  stopdate: Date;
+  startDate: string;
+  stopdate: string;
 };
 
 type Event = {
@@ -348,7 +348,7 @@ const EventPage = () => {
            <div className="flex flex-col gap-3 mb-4">
             {event.tickets?.map((ticket) => {
               const isSelected = selectedTicketId === ticket.id;
-              const now = new Date();
+              const now = new Date(new Date().getTime() + 1 * 60 * 60 * 1000); 
 
               const isDimmed =
                 (selectedTicketId !== null && !isSelected) ||
@@ -360,11 +360,11 @@ const EventPage = () => {
                 <div
                   key={ticket.id}
                   onClick={() => {
-                const now = Date.now();
+                const now = new Date(new Date().getTime() + 1 * 60 * 60 * 1000); 
 
-                const hasStarted = new Date(ticket.startDate).getTime() <= now;
-                const notEnded = new Date(ticket.stopdate).getTime() >= now;
 
+                const hasStarted = new Date(ticket.startDate) <= now;
+  const notEnded = new Date(ticket.stopdate) >= now;
                 if (hasStarted && notEnded) {
                   selectTicket(ticket.id);
                 }
