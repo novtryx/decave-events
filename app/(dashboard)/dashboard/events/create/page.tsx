@@ -530,6 +530,7 @@ const CreateEventPage = () => {
                 />
                 <input
                   type="number"
+                  inputMode="decimal"
                   placeholder="Price (₦)"
                   min={0}
                   value={ticket.price}
@@ -547,6 +548,7 @@ const CreateEventPage = () => {
 
               <input
                 type="number"
+                inputMode="decimal"
                 placeholder="Available Quantity"
                 min={1}
                 value={ticket.startQty}

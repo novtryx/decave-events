@@ -27,6 +27,8 @@ const navLinks = [
     { label: "Attendees", href: "/dashboard/attendees", icon: <MdPeople /> },
     { label: "Payouts", href: "/dashboard/payouts", icon: <MdPayments /> },
     { label: "Settings", href: "/dashboard/settings", icon: <MdSettings /> },
+    { label: "Vote", href: "/dashboard/voting", icon: <MdSettings /> },
+    { label: "Create Voting", href: "/dashboard/voting/create-vote", icon: <MdSettings /> },
 ];
 
 const OrganizerLayout = ({ children }: Props) => {
