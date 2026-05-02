@@ -117,3 +117,17 @@ export async function castFreeVote(payload: {
 
   return res.json();
 }
+
+
+export async function updateVote(id: string, payload: CompetitionForm): Promise<any> {
+  noStore();
+
+  return handleAction(async () => {
+    const res = await protectedFetch<any>(`/vote/${id}`, {
+      method: "PATCH",
+      body: payload,
+    });
+
+    return res;
+  });
+}

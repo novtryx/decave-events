@@ -340,7 +340,7 @@ const Competitions = () => {
                 </Link>
                 <div className="w-px h-5 bg-[#1f1f1f]" />
                 <Link
-                  href={`/dashboard/competitions/edit/${(comp.id)}`}
+                  href={`/dashboard/voting/edit/${(comp.id)}`}
                   className="flex-1 flex items-center justify-center gap-1 py-3 text-xs font-medium text-gray-400 hover:text-[#FFD159] hover:bg-[#1a1a1a] transition"
                 >
                   Edit

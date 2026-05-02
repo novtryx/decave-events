@@ -74,12 +74,10 @@ const VotingPage = () => {
       </div>
     );
 
-  const now = Date.now();
-  const isLive =
-    now >= new Date(data.voteStart).getTime() &&
-    now <= new Date(data.voteEnd).getTime();
-  const isEnded = now > new Date(data.voteEnd).getTime();
-  const notStarted = now < new Date(data.voteStart).getTime();
+ const now = Date.now() + 1 * 60 * 60 * 1000;
+const isLive = now >= new Date(data.voteStart).getTime() && now <= new Date(data.voteEnd).getTime();
+const isEnded = now > new Date(data.voteEnd).getTime();
+const notStarted = now < new Date(data.voteStart).getTime();
 
   const contestants = Array.isArray(data.contestants) ? data.contestants : [];
 

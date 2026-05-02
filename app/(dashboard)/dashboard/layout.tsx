@@ -11,6 +11,8 @@ import {
     MdAdd,
     MdMenu,
     MdClose,
+    MdHowToVote,
+    MdAddBox,
 } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import { UserBadge } from "@/components/ui/UserBadge"; 
@@ -24,11 +26,11 @@ const navLinks = [
     { label: "Overview", href: "/dashboard", icon: <MdDashboard /> },
     { label: "Events", href: "/dashboard/events", icon: <MdEvent /> },
     { label: "Create Event", href: "/dashboard/events/create", icon: <MdAdd /> },
+    { label: "Vote", href: "/dashboard/voting", icon: <MdHowToVote /> },
+    { label: "Create Voting", href: "/dashboard/voting/create-vote", icon: <MdAddBox /> },
     { label: "Attendees", href: "/dashboard/attendees", icon: <MdPeople /> },
     { label: "Payouts", href: "/dashboard/payouts", icon: <MdPayments /> },
     { label: "Settings", href: "/dashboard/settings", icon: <MdSettings /> },
-    { label: "Vote", href: "/dashboard/voting", icon: <MdSettings /> },
-    { label: "Create Voting", href: "/dashboard/voting/create-vote", icon: <MdSettings /> },
 ];
 
 const OrganizerLayout = ({ children }: Props) => {
