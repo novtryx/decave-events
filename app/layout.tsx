@@ -58,6 +58,11 @@ export const metadata: Metadata = {
       "Step into deCave's world of curated luxury events and premium nightlife experiences.",
     images: ["/logo.svg"],
   },
+    icons: {
+    icon: "/logo.svg",          // browser tab
+    shortcut: "/logo.svg",      // shortcut icon
+    apple: "/logo.svg",         // iOS home screen
+  },
   
 };
 

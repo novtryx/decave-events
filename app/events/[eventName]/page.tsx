@@ -397,13 +397,16 @@ const EventPage = () => {
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-600 mb-1.5"> {new Date(ticket.startDate)> now ? "Ticket is not yet on Sales": new Date(ticket.stopdate) < now ? "Ticket Sales Ended" :"Limited tickets remaining"} </p>
+                    <p className="text-xs text-gray-600 mb-1.5"> {new Date(ticket.startDate)>= now ? "Ticket is not yet on Sales": new Date(ticket.stopdate) <= now ? "SOLD OUT" :"Limited tickets remaining"} </p>
+                    {
+                        new Date(ticket.stopdate) >= now &&
                     <div className="h-1 bg-[#1e1e1e] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#FFD159] rounded-full"
                         style={{ width: `${100 - soldPct}%` }}
                       />
                     </div>
+                    }
                   </div>
 
                   {isSelected && (

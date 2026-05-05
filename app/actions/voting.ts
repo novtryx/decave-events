@@ -131,3 +131,14 @@ export async function updateVote(id: string, payload: CompetitionForm): Promise<
     return res;
   });
 }
+
+
+export async function deleteVote(id: string): Promise<any> {
+  noStore();
+  const res = await protectedFetch<any>(`/vote/${id}`, {
+    method: "DELETE"
+  });
+
+return res
+
+}

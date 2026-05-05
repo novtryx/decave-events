@@ -125,3 +125,26 @@ export async function getDashboardOverview(): Promise<any> {
   });
   return res;
 }
+
+export async function deleteEvent(id: string): Promise<any> {
+  noStore();
+  const res = await protectedFetch<any>(`/events/${id}`, {
+    method: "DELETE"
+  });
+
+return res
+
+}
+
+export async function updateTicketSaleDate(
+  eventId: number,
+  ticketId: string,
+  payload: { startDate?: string; stopdate?: string }
+): Promise<any> {
+  noStore();
+  const res = await protectedFetch<any>(`/events/${eventId}/tickets/${ticketId}/sale-dates`, {
+    method: "PATCH",
+    body: payload,
+  });
+  return res;
+}

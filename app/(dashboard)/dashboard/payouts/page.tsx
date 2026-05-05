@@ -402,6 +402,7 @@ const PayoutsPage = () => {
     staleTime: 30_000,
   });
 
+
   const { data: withdrawals, isLoading: withdrawalsLoading } = useQuery<PaginatedWithdrawals>({
     queryKey: ["withdrawals", page],
     queryFn: () => getWithdrawals(String(page)),

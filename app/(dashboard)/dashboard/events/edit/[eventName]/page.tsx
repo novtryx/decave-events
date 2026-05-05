@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { MdArrowBack, MdCloudUpload, MdClose, MdImage, MdAdd, MdLock } from "react-icons/md";
 import { uploadFile } from "@/app/actions/upload";
-import { getEventByName, updateEvent } from "@/app/actions/events";
+import { getEventByName, updateEvent, updateTicketSaleDate } from "@/app/actions/events";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { underscoreToSpace } from "@/lib/generalFunction";
@@ -19,6 +19,15 @@ type EventForm = {
   address: string;
   theme: string;
   visibilty: boolean;
+};
+
+type Ticket = {
+  id: number;
+  type: string;
+  price: number;
+  startQty: number;
+  startDate?: string | null;  // ISO string
+  topdate?: string | null;    // ISO string
 };
 
 type Event = {
@@ -49,6 +58,79 @@ const LockedField = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+// ─── Ticket Sales Button ──────────────────────────────────────────────────────
+
+const TicketSalesButton = ({
+  label,
+  color,
+  ticketId,
+  field,
+  value,
+  eventId,
+}: {
+  label: string;
+  color: "green" | "red";
+  ticketId: string;
+  field: "startDate" | "endDate";
+  value: string;
+  eventId: number;
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const colorMap = {
+    green: {
+      bg: "bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-400",
+      spinner: "border-green-400",
+    },
+    red: {
+      bg: "bg-red-500/10 hover:bg-red-500/20 border-red-500/30 text-red-400",
+      spinner: "border-red-400",
+    },
+  };
+
+const handleClick = async () => {
+  if (loading || done) return;
+  const confirmed = window.confirm(`Are you sure you want to "${label}" for this ticket?`);
+  if (!confirmed) return;
+
+  try {
+    setLoading(true);
+    // field is "startDate" or "endDate" — map endDate → stopdate to match backend
+    const payload = field === "endDate"
+      ? { stopdate: value }
+      : { startDate: value };
+
+    await updateTicketSaleDate(eventId, ticketId, payload);
+    setDone(true);
+  } catch (err) {
+    console.error("Failed to update ticket sale date:", err);
+    alert("Something went wrong. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={loading || done}
+      className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed ${colorMap[color].bg}`}
+    >
+      {loading ? (
+        <>
+          <div className={`w-3 h-3 border border-t-transparent rounded-full animate-spin ${colorMap[color].spinner}`} />
+          Updating...
+        </>
+      ) : done ? (
+        <>✓ Done</>
+      ) : (
+        label
+      )}
+    </button>
+  );
+};
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const EditEventPage = () => {
@@ -489,31 +571,103 @@ const EditEventPage = () => {
         </section>
 
         {/* LOCKED — TICKETS */}
-        <section className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <h2 className="text-white font-semibold text-lg">Tickets</h2>
-            <span className="flex items-center gap-1 text-xs text-gray-600 bg-[#1a1a1a] px-2 py-0.5 rounded-full">
-              <MdLock size={10} /> Locked
+        {/* TICKETS — with sales controls */}
+<section className="flex flex-col gap-4">
+  <div className="flex items-center gap-2">
+    <h2 className="text-white font-semibold text-lg">Tickets</h2>
+    <span className="flex items-center gap-1 text-xs text-gray-600 bg-[#1a1a1a] px-2 py-0.5 rounded-full">
+      <MdLock size={10} /> Partially Locked
+    </span>
+  </div>
+
+  <div className="flex flex-col gap-2">
+    {event.tickets.map((ticket, index) => {
+      const now = new Date();
+      const startDate = ticket.startDate ? new Date(ticket.startDate) : null;
+      const endDate   = ticket.stopdate   ? new Date(ticket.stopdate)   : null;
+
+      // Sales haven't started yet — show "Start Sales Now"
+      const canStartEarly = startDate && startDate > now;
+      // Sales are still ongoing — show "End Sales Now"
+      const canEndEarly   = endDate && endDate > now && (!startDate || startDate <= now);
+
+      return (
+        <div
+          key={ticket.id ?? index}
+          className="flex flex-col gap-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-4 py-3"
+        >
+          {/* Ticket info row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <MdLock size={14} className="text-gray-600" />
+              <div>
+                <p className="text-sm text-gray-400 font-medium">{ticket.type}</p>
+                <p className="text-xs text-gray-600">
+                  {ticket.startQty} tickets · ₦{Number(ticket.price).toLocaleString("en-NG")}
+                </p>
+              </div>
+            </div>
+            <span className="text-xs text-gray-600 bg-[#1a1a1a] px-2 py-1 rounded-lg">
+              Not editable
             </span>
           </div>
-          <div className="flex flex-col gap-2">
-            {event.tickets.map((ticket, index) => (
-              <div key={ticket.id ?? index}
-                className="flex items-center justify-between bg-[#0a0a0a] border border-[#1a1a1a] rounded-xl px-4 py-3 opacity-50 cursor-not-allowed"
-              >
-                <div className="flex items-center gap-3">
-                  <MdLock size={14} className="text-gray-600" />
-                  <div>
-                    <p className="text-sm text-gray-400 font-medium">{ticket.type}</p>
-                    <p className="text-xs text-gray-600">{ticket.startQty} tickets · ₦{Number(ticket.price).toLocaleString("en-NG")}</p>
-                  </div>
-                </div>
-                <span className="text-xs text-gray-600 bg-[#1a1a1a] px-2 py-1 rounded-lg">Not editable</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-gray-600">Ticket details cannot be changed after publishing to protect existing buyers.</p>
-        </section>
+
+          {/* Sales dates (read-only display) */}
+          {(startDate || endDate) && (
+            <div className="flex flex-wrap gap-3 text-xs text-gray-600 border-t border-[#1a1a1a] pt-2">
+              {startDate && (
+                <span>
+                  Sales start:{" "}
+                  <span className={startDate >= now ? "text-yellow-400" : "text-green-400"}>
+                    {startDate.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })}
+                  </span>
+                </span>
+              )}
+              {endDate && (
+                <span>
+                  Sales end:{" "}
+                  <span className={endDate >= now ? "text-blue-400" : "text-red-400"}>
+                    {endDate.toLocaleString("en-NG", { dateStyle: "medium", timeStyle: "short" })}
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Action buttons */}
+          {(canStartEarly || canEndEarly) && (
+            <div className="flex gap-2 pt-1">
+              {canStartEarly && (
+                <TicketSalesButton
+                  label="Start Sales Now"
+                  color="green"
+                  ticketId={ticket.id}
+                  field="startDate"
+                  value={new Date().toISOString()}
+                  eventId={event.id}
+                />
+              )}
+              {canEndEarly && (
+                <TicketSalesButton
+                  label="End Sales Now"
+                  color="red"
+                  ticketId={ticket.id}
+                  field="endDate"
+                  value={new Date().toISOString()}
+                  eventId={event.id}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      );
+    })}
+  </div>
+
+  <p className="text-xs text-gray-600">
+    Ticket price and quantity cannot be changed after publishing to protect existing buyers.
+  </p>
+</section>
 
         {/* LOCKED — ORGANIZER PAYS */}
         <section className="flex flex-col gap-4">
