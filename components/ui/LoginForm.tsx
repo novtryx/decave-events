@@ -16,6 +16,7 @@ interface LoginFormProps {
   registerHref?: string;
   forgotPasswordHref?: string;
   className?: string;
+  dashboardHref?: string;
 }
 
 interface FormErrors {
@@ -49,6 +50,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   registerHref = "/register",
   forgotPasswordHref = "/forgot-password",
   className = "",
+  dashboardHref ="/dashboard"
 }) => {
   const router =  useRouter()
   const [email, setEmail] = useState("");
@@ -103,7 +105,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     return;
   }
 
-  router.push("/dashboard")
+  router.push(dashboardHref)
   // success case handled outside or redirect happens
 };
 
@@ -131,7 +133,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           Welcome back
         </h1>
         <p className="text-sm text-white/50">
-          Sign in to access your tickets and events
+          Sign in to access your dashboard
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 "use server"
 import { protectedFetch } from "@/lib/protectedFetch";
+import { publicFetch } from "@/lib/publicFetch";
 import { unstable_noStore as noStore } from "next/cache";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -123,7 +124,7 @@ export async function deleteBankAccount(): Promise<{ message: string }> {
 
 export async function getBanks(): Promise<Bank[]> {
   noStore();
-  const res = await protectedFetch<Bank[]>("/payouts/banks", {
+  const res = await publicFetch<Bank[]>("/payouts/banks", {
     method: "GET",
   });
   return res;
@@ -134,7 +135,7 @@ export async function resolveAccount(
   bankCode: string
 ): Promise<{ account_name: string; account_number: string }> {
   noStore();
-  const res = await protectedFetch<{ account_name: string; account_number: string }>(
+  const res = await publicFetch<{ account_name: string; account_number: string }>(
     `/payouts/resolve-account?accountNumber=${accountNumber}&bankCode=${bankCode}`,
     { method: "GET" }
   );
