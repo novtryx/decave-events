@@ -8,6 +8,7 @@ import {
   MdLock,
   MdConfirmationNumber,
   MdCheckCircle,
+  MdPercent,
 } from "react-icons/md";
 
 import Button from "@/components/ui/Button";
@@ -20,6 +21,7 @@ interface RegisterFormProps {
     email: string;
     username: string;
     password: string;
+    influencersTakesPercentage?: boolean;
   }) => Promise<any> | any;
   logoText?: string;
   logoHref?: string;
@@ -33,6 +35,7 @@ interface FormFields {
   username: string;
   password: string;
   confirmPassword: string;
+  influencersTakesPercentage: boolean;
 }
 
 interface FormErrors {
@@ -103,12 +106,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     username: "",
     password: "",
     confirmPassword: "",
+    influencersTakesPercentage: false,
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
 
-  const [touched, setTouched] = useState<Record<keyof FormFields, boolean>>({
+  const [touched, setTouched] = useState<Record<keyof Omit<FormFields, "influencersTakesPercentage">, boolean>>({
     fullName: false,
     email: false,
     username: false,
@@ -118,7 +122,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   const strength = getPasswordStrength(fields.password);
 
-  const updateField = (key: keyof FormFields, value: string) => {
+  const updateField = (key: keyof Omit<FormFields, "influencersTakesPercentage">, value: string) => {
     const updated = { ...fields, [key]: value };
     setFields(updated);
 
@@ -139,13 +143,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     }
   };
 
-  const handleBlur = (field: keyof FormFields) => {
+  const handleBlur = (field: keyof Omit<FormFields, "influencersTakesPercentage">) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     const validation = validate(fields);
     setErrors((prev) => ({ ...prev, [field]: validation[field] }));
   };
 
-  const getValidationState = (field: keyof FormFields) => {
+  const getValidationState = (field: keyof Omit<FormFields, "influencersTakesPercentage">) => {
     if (!touched[field] || !fields[field]) return "default";
     return errors[field] ? "error" : "success";
   };
@@ -176,6 +180,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
       email: fields.email,
       username: fields.username,
       password: fields.password,
+      influencersTakesPercentage: fields.influencersTakesPercentage,
     });
 
     setLoading(false);
@@ -300,7 +305,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           </div>
         )}
 
-        {/* CONFIRM PASSWORD (FRONTEND ONLY) */}
+        {/* CONFIRM PASSWORD */}
         <Input
           type="password"
           placeholder="Confirm password"
@@ -314,6 +319,62 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           errorMessage={errors.confirmPassword}
           disabled={loading}
         />
+
+        {/* INFLUENCER PERCENTAGE TOGGLE */}
+        <div className="flex flex-col gap-2 px-4 py-4 rounded-xl border border-border bg-surface">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-primary text-base">
+                <MdPercent />
+              </span>
+              <span className="text-sm font-medium text-white">
+                10% Commission
+              </span>
+            </div>
+
+            {/* Toggle switch */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={fields.influencersTakesPercentage}
+              disabled={loading}
+              onClick={() =>
+                setFields((prev) => ({
+                  ...prev,
+                  influencersTakesPercentage: !prev.influencersTakesPercentage,
+                }))
+              }
+              className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{
+                background: fields.influencersTakesPercentage ? "#FFD159" : "rgba(255,255,255,0.1)",
+              }}
+            >
+              <span
+                aria-hidden="true"
+                className={[
+                  "pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transform transition duration-200 ease-in-out",
+                  fields.influencersTakesPercentage
+                    ? "translate-x-5"
+                    : "translate-x-0",
+                ].join(" ")}
+              />
+            </button>
+          </div>
+
+         <p className="text-xs text-white/50 leading-relaxed">
+            {fields.influencersTakesPercentage ? (
+              <>
+                <span className="text-white/70 font-medium">Buyer pays full price.</span>
+                {" "}When your referral code is used, 10% of the ticket price is sent to you as commission.
+              </>
+            ) : (
+              <>
+                <span className="text-primary font-medium">Buyer gets 10% off.</span>
+                {" "}When your referral code is used, the ticket price is discounted by 10% for the buyer.
+              </>
+            )}
+          </p>
+        </div>
 
         <Button
           type="submit"

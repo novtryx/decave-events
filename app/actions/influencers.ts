@@ -13,6 +13,7 @@ type RegisterInfluencerPayload = {
     fullName: string;
     password:  string;
     username: string;
+    influencersTakesPercentage?: boolean;
 }
 
 type InfluencerLoginResponse = {
