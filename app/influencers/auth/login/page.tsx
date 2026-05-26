@@ -17,7 +17,7 @@ const page = () => {
       dashboardHref='/influencers'
       logoHref="/"
       registerHref="/influencers/auth/register"
-      forgotPasswordHref="/forgot-password"
+      forgotPasswordHref="/influencers/auth/login"
     />
   )
 }
