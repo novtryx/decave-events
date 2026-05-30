@@ -392,9 +392,15 @@ function WithdrawalModal({
 function ReferralCode({ code }: { code?: string }) {
   const [copied, setCopied] = useState(false);
 
+  // Extract just the ref code for display, use full URL for copying
+  const isFullUrl = code?.startsWith("http");
+  const displayCode = isFullUrl
+    ? new URL(code!).searchParams.get("ref") ?? code
+    : code;
+
   const handleCopy = async () => {
     if (!code) return;
-    await navigator.clipboard.writeText(code);
+    await navigator.clipboard.writeText(code); // copies the full link
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -402,14 +408,14 @@ function ReferralCode({ code }: { code?: string }) {
   if (!code) return <Skeleton className="h-8 w-28" />;
 
   return (
-    <div className="flex items-center gap-2 bg-[#181818] border border-[#252525] rounded-xl px-3 py-1.5">
-      <span className="font-mono text-[#FFD159] font-bold text-xs sm:text-sm tracking-widest">
-        {code}
+    <div className="flex items-center gap-2 bg-[#181818] border border-[#252525] rounded-xl px-3 py-1.5 min-w-0">
+      <span className="font-mono text-[#FFD159] font-bold text-xs sm:text-sm tracking-widest truncate max-w-[120px] sm:max-w-[160px]">
+        {displayCode}
       </span>
       <button
         onClick={handleCopy}
         className="text-[#444] hover:text-[#FFD159] transition-colors ml-1 flex-shrink-0"
-        title="Copy code"
+        title={copied ? "Copied link!" : "Copy referral link"}
       >
         {copied ? (
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -509,7 +515,7 @@ function MobileNav({
         <div className="px-3 py-3 border-t border-[#222]">
           <p className="text-[10px] font-medium text-[#444] uppercase tracking-widest mb-2 px-1">Referral Code</p>
           <div className="px-1">
-            <ReferralCode code={referralCode} />
+          <ReferralCode code={`https://www.decavemgt.com/events/Loud-Room?ref=${referralCode}`} />
           </div>
         </div>
 
@@ -610,7 +616,7 @@ function Topbar({
           <span className="text-[10px] font-medium text-[#444] uppercase tracking-widest hidden md:block">
             Referral
           </span>
-          <ReferralCode code={referralCode} />
+          <ReferralCode code={`https://www.decavemgt.com/events/Loud-Room?ref=${referralCode}`} />
         </div>
 
         <div className="lg:hidden w-8 h-8 rounded-lg bg-[#FFD159] flex items-center justify-center text-black font-bold text-xs flex-shrink-0">
@@ -693,12 +699,13 @@ export default function InfluencerPage() {
         initials={initials}
         fullName={data?.fullName}
         username={data?.username}
-        referralCode={data?.referralCode}
+       referralCode={data?.referralCode ? `https://www.decavemgt.com/events/Loud-Room?ref=${data.referralCode}` : undefined}
+
       />
 
       <div className="relative z-10 flex flex-col flex-1 min-w-0 overflow-hidden">
         <Topbar
-          referralCode={data?.referralCode}
+            referralCode={data?.referralCode ? `https://www.decavemgt.com/events/Loud-Room?ref=${data.referralCode}` : undefined}
           initials={initials}
           fullName={data?.fullName}
           onMenuOpen={() => setMobileNavOpen(true)}
@@ -711,7 +718,7 @@ export default function InfluencerPage() {
             <span className="text-[10px] font-medium text-[#444] uppercase tracking-widest">
               Referral Code
             </span>
-            <ReferralCode code={data?.referralCode} />
+           <ReferralCode code={data?.referralCode ? `https://www.decavemgt.com/events/Loud-Room?ref=${data.referralCode}` : undefined} />
           </div>
 
           {/* ── Stats ── */}
