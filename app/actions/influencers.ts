@@ -69,7 +69,7 @@ export async function LoginInfluencer(payload: InfluencerLoginPayload): Promise<
 
 export async function me(): Promise<any> {
  
-  const res = await influencerProtectedFetch<any>("/influencers", {
+  const res = await influencerProtectedFetch<any>("/influencers/me", {
     method: "GET"
   });
 

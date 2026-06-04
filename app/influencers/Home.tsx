@@ -650,6 +650,8 @@ export default function InfluencerPage() {
     queryKey: ["me"],
     queryFn: me,
   });
+  
+  console.log("data==", data)
 
   const { data: summary, isLoading: isHistoryLoading } = useQuery({
     queryKey: ["influencer-transaction", page],
