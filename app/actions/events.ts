@@ -148,3 +148,14 @@ export async function updateTicketSaleDate(
   });
   return res;
 }
+
+export async function checkInAttendees( payload : {eventId: number, attendeeId: string}): Promise<any> {
+  noStore();
+  const res = await protectedFetch<any>(`/attendees/check-in`, {
+    method: "POST",
+    body: payload,
+  });
+
+return res
+
+}

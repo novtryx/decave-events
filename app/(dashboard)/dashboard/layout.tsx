@@ -17,6 +17,7 @@ import {
 import { usePathname } from "next/navigation";
 import { UserBadge } from "@/components/ui/UserBadge"; 
 import Image from "next/image";
+import { BsCamera } from "react-icons/bs";
 
 type Props = {
     children: ReactNode;
@@ -26,6 +27,7 @@ const navLinks = [
     { label: "Overview", href: "/dashboard", icon: <MdDashboard /> },
     { label: "Events", href: "/dashboard/events", icon: <MdEvent /> },
     { label: "Create Event", href: "/dashboard/events/create", icon: <MdAdd /> },
+    { label: "Check In", href: "/dashboard/check-in", icon: <BsCamera /> },
     { label: "Vote", href: "/dashboard/voting", icon: <MdHowToVote /> },
     { label: "Create Voting", href: "/dashboard/voting/create-vote", icon: <MdAddBox /> },
     { label: "Attendees", href: "/dashboard/attendees", icon: <MdPeople /> },
