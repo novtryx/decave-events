@@ -113,25 +113,29 @@ export default function QRCheckInScanner() {
   };
 
   const doCheckIn = async (attendeeId: string, eventId: number) => {
-    setLoading(true);
-    setResult(null);
-    try {
-      await checkInAttendees({ attendeeId, eventId });
-      setResult({
-        type: "success",
-        message: `Attendee checked in for event #${eventId}`,
-      });
-    } catch (e: any) {
-      const msg: string = e?.message ?? "";
-      if (msg.toLowerCase().includes("already")) {
-        setResult({ type: "already", message: "This attendee is already checked in." });
-      } else {
-        setResult({ type: "error", message: msg || "Check-in failed." });
-      }
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  setResult(null);
+
+  const res = await checkInAttendees({ attendeeId, eventId });
+
+  if (res.success) {
+    setResult({
+      type: "success",
+      message: `Attendee checked in for event #${eventId}`,
+    });
+  } else {
+    const msg = res.message.toLowerCase();
+    if (msg.includes("already")) {
+      setResult({ type: "already", message: "This attendee is already checked in." });
+    } else {
+      setResult({ type: "error", message: res.message });
     }
-  };
+  }
+
+  setLoading(false);
+};
+
+
 
   const submitManual = async () => {
     if (!manual.attendeeId || !manual.eventId) return;

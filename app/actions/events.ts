@@ -149,13 +149,22 @@ export async function updateTicketSaleDate(
   return res;
 }
 
-export async function checkInAttendees( payload : {eventId: number, attendeeId: string}): Promise<any> {
+// 1. Change checkInAttendees to return a result instead of throwing
+export async function checkInAttendees(payload: {
+  eventId: number;
+  attendeeId: string;
+}): Promise<{ success: true } | { success: false; message: string }> {
   noStore();
-  const res = await protectedFetch<any>(`/attendees/check-in`, {
-    method: "POST",
-    body: payload,
-  });
-
-return res
-
+  try {
+    await protectedFetch<any>(`/attendees/check-in`, {
+      method: "POST",
+      body: payload,
+    });
+    return { success: true };
+  } catch (e: any) {
+    return {
+      success: false,
+      message: e?.message ?? "Check-in failed. Please try again.",
+    };
+  }
 }
